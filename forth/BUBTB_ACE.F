@@ -42,7 +42,7 @@ create display_buffer	0 c, 0 c, 0 c, 0 c, 0 c, 0 c, 0 c, 0 c, 	\ default 8 space
 create twos 1 c, 2 c, 4 c, 8 c, 16 c, 32 c, 64 c, 128 c, 
 
 : power2 ( y -- r )  								\ x to the power of y, useful for selecting bits
-				twos + @		 
+				twos + c@		 
 ; 
 
 : >= ( n1 n2 -- f )
@@ -52,11 +52,11 @@ create twos 1 c, 2 c, 4 c, 8 c, 16 c, 32 c, 64 c, 128 c,
 
 
 : selectDigit ( n -- ) 
-				digit_select_port PC!
+				digit_select_port out
 ;
 
 : sendData ( n -- ) 
-				segment_port pc!
+				segment_port out
 ;
 
 : sendChar ( n -- )
@@ -113,7 +113,7 @@ create twos 1 c, 2 c, 4 c, 8 c, 16 c, 32 c, 64 c, 128 c,
 
 
 : sendScreenCodeToDigit ( c d -- )	
-				2 swap power		\ convert digit from 0-7 to 1-128. 2 to the power of what is sent		
+				2 swap power2		\ convert digit from 0-7 to 1-128. 2 to the power of what is sent		
 				selectDigit
 			
 				sendChar
@@ -137,10 +137,10 @@ create twos 1 c, 2 c, 4 c, 8 c, 16 c, 32 c, 64 c, 128 c,
 		
 					sendScreenCodeToDigit
 
-					on_time pause													\ delay before presenting next digit
+					on_time pause												\ short delay while this row on 
 			
 					0 i sendScreenCodeToDigit									\ send space - reduces ghosting when scrolling
-
+																				
 				loop
 ;
 		
